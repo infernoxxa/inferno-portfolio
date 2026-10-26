@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://xxxinferno.me/sitemap.xml

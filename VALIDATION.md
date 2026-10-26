@@ -1,0 +1,69 @@
+# 本地验收记录
+
+日期：2026-10-26（Asia/Shanghai）。项目位置：`D:\VueProject\myProfile`。
+
+## 已完成
+
+| 检查 | 结果 |
+| --- | --- |
+| `npm install` | 依赖安装完成；安装时 npm audit 报告 0 个漏洞 |
+| `npm run build` | TypeScript 严格检查、客户端构建、静态预渲染均通过 |
+| `npm run check:routes` | 7 个页面、97 个内部链接及锚点通过 |
+| 页面元信息 | 独立 title、description、canonical、Open Graph；单个 H1 和 main |
+| 静态输出 | 首页、两项目详情、两演示筹备页、简历摘要、404 均生成 HTML |
+| 索引策略 | 演示筹备页与 404 为 noindex，并排除在生成的 sitemap 之外 |
+| 屏幕宽度 | 360、390、768、1280、1440px，合计 35 组页面 / 视口检查通过 |
+| 横向溢出 | 所有检查组合均无页面横向溢出 |
+| 移动导航 | 展开、点击锚点后收起、Escape 收起通过 |
+| 首页机制切换 | PersonalAI / CloudSync 切换与按钮状态通过 |
+| 页面导航 | 项目详情、演示预告、下一个项目、浏览器返回通过 |
+| 深链刷新 | 直接打开与刷新项目详情通过 |
+| HTTP 状态 | 6 个已知内容路由为 200；随机不存在路径为 404，均在五个宽度检查 |
+| 无 JavaScript | CloudSync 项目详情仍包含项目标题和 baseVersionId 正文 |
+| 键盘 | 跳过导航并聚焦正文通过；链接和按钮具有可见焦点样式 |
+| 浏览器日志 | 最终检查无控制台错误或警告；预期的未知页面 HTTP 404 单独处理 |
+| 原始个人资料 | 构建扫描未发现原简历手机号或私人邮箱；未复制原始简历 / 头像 |
+| 下载入口 | 未提供未经审核的简历 PDF 下载 |
+| 视觉检查 | 已查看桌面 / 手机首页和 PersonalAI 详情页完整截图 |
+
+浏览器：本机已安装的 Chrome，通过已有 Playwright 运行，无额外浏览器下载。检查使用构建后的静态预览服务，包含 `public/_headers` 中的 CSP 等响应头；页面无 CSP 加载错误。
+
+## 检查过程中修正
+
+- 客户端根据预渲染页面标识判断是否 hydration，避免开发回退或未知路径加载时错误复用首页 DOM。
+- 生产预览改为直接读取静态输出，修正无末尾斜杠的深链被 Vite 预览回退为首页 HTML 的问题。
+- 未知地址使用真实 HTTP 404；不使用全站重写到首页的规则。
+- 修正首页强调色选择器，并复查最终布局。
+
+## 可复核材料
+
+浏览器检查输出保存在 `artifacts/browser/`（已忽略，不进入 Git）：
+
+- `results.json`：35 组检查结果、12 项交互检查及日志摘要。
+- `home-360.png`、`home-390.png`、`home-768.png`、`home-1280.png`、`home-1440.png`。
+- `personal-ai-390.png`、`personal-ai-1440.png`。
+
+复跑方式（使用已有 Playwright 安装路径）：
+
+```powershell
+# 终端 1
+npm run preview
+
+# 终端 2
+$env:PLAYWRIGHT_MODULE = 'C:\path\to\playwright\index.mjs'
+node scripts/browser-check.mjs
+```
+
+`QA_URL` 可更改预览地址；`QA_BROWSER` 可更改 Playwright 浏览器 channel；`QA_OUTPUT` 可更改报告目录。
+
+## 尚未执行的线上验收
+
+- 未建立 GitHub 远端、未推送，也未发布或修改 Cloudflare / DNS。
+- 尚未验证真实 `pages.dev`、正式域名 HTTPS、Pages 自动构建及线上深链行为。
+- Lighthouse 分数未测量，不宣称已达到 90+。
+- 未开展跨浏览器、屏幕阅读器或真实移动设备测试；当前为 Chrome 模拟视口检查。
+- 项目实现描述来自用户提供的简历，尚未独立审查 PersonalAI / CloudSync 源码或运行服务。
+- GitHub、仓库、公开邮箱、公开 PDF 地址留空，待用户确认；学校、姓名、手机号和原始邮箱未公开。
+- Open Graph 图片为 SVG，部分分享平台需后续提供 PNG。
+
+本地完成不等于已上线；正式发布时仍须执行 README 中的 `pages.dev` 验证和域名迁移步骤。
