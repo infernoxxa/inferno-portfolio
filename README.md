@@ -14,7 +14,7 @@ npm ci
 npm run dev
 ```
 
-访问终端显示的本地地址，默认 `http://127.0.0.1:5173`。
+访问终端显示的本地地址，默认 `http://127.0.0.1:3000`。
 
 ```powershell
 npm run build
