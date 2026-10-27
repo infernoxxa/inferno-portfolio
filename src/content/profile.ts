@@ -3,7 +3,7 @@ export const profile = {
   name: 'XXX Inferno',
   brand: 'XXX Inferno',
   domain: 'https://xxxinferno.me',
-  updated: '2026-10-27',
+  updated: '2026-10-28',
   graduation: '2027 届',
   role: 'AI Agent 开发 / Python / Java 后端',
   summary: '软件工程硕士在读，关注 AI 应用与后端系统。喜欢把复杂问题拆解为清晰的边界，再用可以解释、可以恢复的工程机制将它们连接起来。',

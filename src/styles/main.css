@@ -59,7 +59,7 @@ main:focus { outline: none; }
 .site-header { position: sticky; top: 0; z-index: 40; background: #fffffff5; border-bottom: 1px solid #f3ebef; backdrop-filter: blur(14px); }
 .nav-shell { min-height: 86px; display: flex; align-items: center; justify-content: space-between; gap: 40px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 23px; font-weight: 600; white-space: nowrap; }
-.brand svg { width: 19px; height: 27px; color: var(--brand); }
+.brand-mark { display: block; width: 36px; height: 36px; flex-shrink: 0; object-fit: cover; border-radius: 8px; }
 .brand-dot { color: var(--pink); }
 .main-nav { display: flex; align-items: center; gap: 34px; }
 .main-nav a { color: var(--muted); font-size: 16px; padding: 16px 2px; position: relative; }
@@ -67,8 +67,9 @@ main:focus { outline: none; }
 .main-nav a.nav-current::after { content: ""; height: 3px; width: 16px; position: absolute; bottom: 6px; left: calc(50% - 8px); border-radius: 2px; background: var(--pink); }
 .menu-toggle { display: none; }
 .site-footer { margin-top: 56px; padding: 35px 0 30px; border-top: 1px solid var(--line); display: flex; align-items: flex-start; flex-wrap: wrap; justify-content: space-between; gap: 25px; }
-.footer-name { font-family: var(--display); font-size: 19px; font-weight: 600; }
+.footer-name { display: inline-flex; align-items: center; gap: 9px; font-family: var(--display); font-size: 19px; font-weight: 600; }
 .site-footer > div > p { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+.footer-name .brand-mark { width: 28px; height: 28px; border-radius: 6px; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 24px; font-size: 14px; padding-top: 4px; }
 .footer-links a:hover { color: var(--brand); }
 .footer-meta { width: 100%; margin: 0; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 15px; }
@@ -360,7 +361,7 @@ main:focus { outline: none; }
   .container { width: calc(100% - 40px); }
   .nav-shell { min-height: 70px; }
   .brand { font-size: 20px; gap: 8px; }
-  .brand svg { width: 17px; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 7px; }
   .menu-toggle { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 44px; height: 44px; border: 1px solid var(--line); background: white; border-radius: 6px; }
   .menu-toggle > span { width: 17px; height: 1.5px; background: var(--text); }
   .main-nav { display: none; position: absolute; top: 70px; left: 0; right: 0; padding: 12px 20px 20px; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 15px 25px #7b2b4508; }

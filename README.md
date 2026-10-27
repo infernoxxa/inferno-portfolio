@@ -62,6 +62,10 @@ npm run preview
 
 `/resume` 的“打印简历”仅打印公开页面；正式公开版 PDF 经确认后，可放入静态资源并配置 `profile.resumePdf`。联系方式未配置时明确显示尚未公开，不提供虚假联系按钮。
 
+## 站点形象
+
+站点使用用户选定的 D2 原创卡通形象。原图保留在 `src/assets/brand/d2-source.png`，网页加载 `public/brand/` 中缩小的 PNG；导航和页脚使用 128px 资源，浏览器和 Apple 触屏图标有独立尺寸，分享图为 1200×630 PNG。原图不经重绘或裁切，只有用于网页的尺寸导出。旧 `/favicon.svg` 地址保留为包含 D2 的兼容入口。
+
 ## 本地 Git 与 GitHub
 
 源码仓库：[infernoxxa/inferno-portfolio](https://github.com/infernoxxa/inferno-portfolio)。先本地开发、验收与提交，再按用户指示推送。
@@ -100,4 +104,4 @@ git push origin main
 
 `scripts/browser-check.mjs` 使用已有 Playwright 和本机 Chrome，覆盖 360 / 390 / 768 / 1280 / 1440 / 1920px、文章分类及刷新、目录定位、项目与演示往返、浏览器返回、旧入口、键盘与打印样式。设置 `PLAYWRIGHT_MODULE` 指向既有的 Playwright `index.mjs`，必要时设置 `QA_URL`。
 
-截图与运行报告位于被 Git 忽略的 `artifacts/browser/`。实际验收记录和限制见 `VALIDATION.md`。本地检查不替代真实 Pages、Lighthouse、跨浏览器和真实设备验收。分享图为 SVG，部分平台可能需要另行导出 PNG。
+截图与运行报告位于被 Git 忽略的 `artifacts/browser/`。实际验收记录和限制见 `VALIDATION.md`。本地检查不替代真实 Pages、Lighthouse、跨浏览器和真实设备验收。分享图使用本地 PNG。
