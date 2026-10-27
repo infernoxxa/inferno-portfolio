@@ -2,7 +2,7 @@
 
 XXX Inferno 的个人主页与求职作品集。重点展示 PersonalAI 与 CloudSync；补充文献阅读 Demo 和科研经历。
 
-Vue 3 + TypeScript + Vite + Vue Router，系统字体、原生 CSS、内联 SVG，无后端、无跟踪 SDK、无外部字体。构建时预渲染每个公开路由，输出可直接托管的静态 HTML。浏览器加载后由 Vue Router 接管站内导航。
+采用白色背景、红色主色、浅粉色分区与少量亮粉色点缀。Vue 3 + TypeScript + Vite + Vue Router，系统字体、原生 CSS、内联 SVG，无后端、无跟踪 SDK、无外部字体。构建时预渲染每个公开路由，输出可直接托管的静态 HTML。浏览器加载后由 Vue Router 接管站内导航。
 
 ## 本地开发
 
