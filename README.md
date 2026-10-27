@@ -61,7 +61,7 @@ npm run preview
 
 ## 本地 Git 优先
 
-当前阶段不创建 GitHub 仓库、不添加远端、不推送。先本地验收，再决定发布。
+源码仓库为 [infernoxxa/inferno-portfolio](https://github.com/infernoxxa/inferno-portfolio)。日常先在本地开发、预览和提交，经确认后再推送 GitHub。
 
 ```powershell
 git status --short
@@ -72,10 +72,10 @@ git log --oneline -5
 
 日常改动在本地分支进行，验收后合入 `main`。如需新分支，使用 `codex/` 前缀。
 
-最终确认后，在 GitHub 创建空仓库（不要自动生成 README），再执行下面的命令。用实际仓库地址替换占位符；这些是后续操作说明，不表示已执行。
+首次关联远端使用以下命令；已有 origin 时无需重复执行 remote add。后续更新通过 git push 推送。GitHub 源码同步与 Cloudflare 发布分别管理。
 
 ```powershell
-git remote add origin https://github.com/YOUR_ACCOUNT/inferno-portfolio.git
+git remote add origin https://github.com/infernoxxa/inferno-portfolio.git
 git push -u origin main
 ```
 
