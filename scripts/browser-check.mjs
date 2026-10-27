@@ -25,7 +25,7 @@ try {
     if (message.type() === 'warning') warnings.push(message.text())
   })
   page.on('requestfailed', request => errors.push(`Network: ${request.url()} ${request.failure()?.errorText}`))
-  for (const width of [360, 390, 768, 1280, 1440]) {
+  for (const width of [360, 390, 768, 1280, 1440, 1920]) {
     await page.setViewportSize({ width, height: 1000 })
     for (const path of paths) {
       const response = await page.goto(base + path, { waitUntil: 'networkidle' })
@@ -38,6 +38,7 @@ try {
       if (path === '/does-not-exist') assert.match(await page.title(), /页面未找到/)
       if (path === '/' || (width === 390 || width === 1440) && path === '/projects/personal-ai') {
         await page.screenshot({ path: resolve(output, `${path === '/' ? 'home' : 'personal-ai'}-${width}.png`), fullPage: true })
+        if (path === '/' && width === 1920) await page.screenshot({ path: resolve(output, 'home-desktop-viewport.png'), fullPage: false })
       }
       results.push({ width, path, overflow: false })
     }
