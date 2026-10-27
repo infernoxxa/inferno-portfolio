@@ -2,22 +2,20 @@
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BrandMark from './BrandMark.vue'
-import Icon from './Icon.vue'
 const open = ref(false)
+const trigger = ref<HTMLButtonElement | null>(null)
 const route = useRoute()
+const links = [{ label: '首页', path: '/' }, { label: '文章', path: '/blog' }, { label: '项目', path: '/projects' }, { label: '关于', path: '/about' }, { label: '简历', path: '/resume' }]
+const active = (path: string) => path === '/' ? route.path === '/' : route.path === path || route.path.startsWith(path + '/')
+function closeMenu() { open.value = false; trigger.value?.focus() }
 watch(() => route.fullPath, () => { open.value = false })
-const links = [{ label: '项目', hash: '#projects' }, { label: '能力', hash: '#skills' }, { label: '关于', hash: '#about' }]
 </script>
 <template>
-  <header class="site-header" @keydown.esc="open = false">
+  <header class="site-header" @keydown.esc="closeMenu">
     <div class="nav-shell container">
-      <RouterLink to="/" class="brand" aria-label="XXX Inferno 首页"><BrandMark /><span>XXX INFERNO<span class="brand-dot">.</span></span></RouterLink>
-      <button class="menu-toggle" type="button" :aria-expanded="open" aria-controls="main-navigation" :aria-label="open ? '收起导航' : '展开导航'" @click="open = !open"><span></span><span></span></button>
-      <nav id="main-navigation" :class="['main-nav', { open }]" aria-label="主导航">
-        <RouterLink v-for="link in links" :key="link.hash" :to="'/' + link.hash" :class="{ 'nav-current': route.path === '/' && route.hash === link.hash }">{{ link.label }}</RouterLink>
-        <RouterLink to="/resume" :class="{ 'nav-current': route.path === '/resume' }">简历摘要</RouterLink>
-        <RouterLink to="/#contact" class="nav-contact">聊聊机会 <Icon name="diagonal" :size="15" /></RouterLink>
-      </nav>
+      <RouterLink to="/" class="brand" aria-label="XXX Inferno 首页"><BrandMark /><span>XXX Inferno<span class="brand-dot">.</span></span></RouterLink>
+      <button ref="trigger" class="menu-toggle" type="button" :aria-expanded="open" aria-controls="main-navigation" :aria-label="open ? '收起导航' : '展开导航'" @click="open = !open"><span></span><span></span></button>
+      <nav id="main-navigation" :class="['main-nav', { open }]" aria-label="主导航"><RouterLink v-for="link in links" :key="link.path" :to="link.path" :class="{ 'nav-current': active(link.path) }" :aria-current="active(link.path) ? 'page' : undefined">{{ link.label }}</RouterLink></nav>
     </div>
   </header>
 </template>

@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { profile } from '../content/profile'
-import Icon from './Icon.vue'
 </script>
 <template>
-  <footer class="site-footer container">
-    <div><span class="footer-name">XXX INFERNO<span class="accent">.</span></span><p>保持好奇，持续构建。</p></div>
-    <div class="footer-meta"><span>© 2026 XXX Inferno</span><span>更新于 {{ profile.updated }}</span></div>
-    <a class="back-top" href="#top">回到顶部 <Icon name="diagonal" :size="16" /></a>
-  </footer>
+  <footer class="site-footer container"><div><RouterLink to="/" class="footer-name">XXX Inferno</RouterLink><p>技术笔记、项目实践与我的经历。</p></div><div class="footer-links"><RouterLink to="/blog">文章</RouterLink><RouterLink to="/resume">简历</RouterLink><a :href="profile.portfolioRepository" target="_blank" rel="noopener noreferrer">站点源码</a><a href="#top">回到顶部</a></div><p class="footer-meta">© 2026 XXX Inferno <span>更新于 {{ profile.updated }}</span></p></footer>
 </template>

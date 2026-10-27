@@ -8,3 +8,5 @@ export async function render(path: string) {
   await router.isReady()
   return renderToString(app)
 }
+
+export { profile } from './content/profile'

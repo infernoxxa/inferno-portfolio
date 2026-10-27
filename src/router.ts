@@ -1,11 +1,16 @@
 import { createRouter, createWebHistory, createMemoryHistory } from 'vue-router'
+import { posts } from './content/posts'
 
 export function makeRouter(server = false) {
-  return createRouter({
+  const router = createRouter({
     history: server ? createMemoryHistory() : createWebHistory(),
     routes: [
       { path: '/', component: () => import('./views/HomeView.vue') },
+      { path: '/blog', component: () => import('./views/BlogView.vue') },
+      ...posts.map(post => ({ path: '/blog/' + post.slug, component: () => import('./views/ArticleView.vue'), props: { slug: post.slug } })),
+      { path: '/projects', component: () => import('./views/ProjectsView.vue') },
       { path: '/projects/:id(personal-ai|cloud-sync)', component: () => import('./views/ProjectView.vue'), props: true },
+      { path: '/about', component: () => import('./views/AboutView.vue') },
       { path: '/ai/', component: () => import('./views/ComingSoonView.vue'), props: { id: 'personal-ai' } },
       { path: '/cloud/', component: () => import('./views/ComingSoonView.vue'), props: { id: 'cloud-sync' } },
       { path: '/resume', component: () => import('./views/ResumeView.vue') },
@@ -17,4 +22,9 @@ export function makeRouter(server = false) {
       return { top: 0 }
     },
   })
+  const legacy: Record<string, string> = { '#projects': '/projects', '#skills': '/about#skills', '#about': '/about', '#contact': '/resume#contact' }
+  router.beforeEach(to => {
+    if (to.path === '/' && legacy[to.hash]) return { path: legacy[to.hash]!.split('#')[0], hash: legacy[to.hash]!.includes('#') ? '#' + legacy[to.hash]!.split('#')[1] : '', replace: true }
+  })
+  return router
 }

@@ -1,0 +1,6 @@
+<script setup lang="ts">
+import { profile, skills } from '../content/profile'
+</script>
+<template>
+  <div class="container about-page"><header class="page-header"><h1>关于我</h1><p>我是 XXX Inferno，一名软件工程硕士在读的开发者。</p></header><div class="about-layout"><div class="about-copy"><section><h2>现在在做什么</h2><p>{{ profile.summary }}</p><p>我的主要项目是 PersonalAI 和 CloudSync：前者关注 Agent 的持久化执行、工具授权与文件修改，后者关注可靠文件传输、版本管理与存储一致性。</p><p>我也做过 Java / Python 协作的文献阅读 Demo，并在开展认知图导航相关研究。</p><RouterLink to="/projects" class="inline-link">查看项目实践</RouterLink></section><section id="skills"><h2>使用的技术</h2><div v-for="skill in skills" :key="skill.title" class="about-skill"><h3>{{ skill.title }}</h3><p>{{ skill.description }}</p><div class="tags"><span v-for="tag in skill.tags" :key="tag">{{ tag }}</span></div></div></section><section><h2>为什么写在这里</h2><p>项目页保留完整背景，文章则一次讲清楚一个问题。希望这些记录能让来访的人更容易了解我的工作方式，也为之后的实践留下可以回看的依据。</p></section></div><aside class="about-facts"><h2>简要信息</h2><dl><div><dt>当前阶段</dt><dd>软件工程硕士在读</dd></div><div><dt>预计毕业</dt><dd>2027 年 6 月</dd></div><div><dt>关注方向</dt><dd>Agent / Python / Java 后端</dd></div></dl><RouterLink to="/resume" class="button primary">查看公开简历</RouterLink><p>寻找实习与秋招机会。</p></aside></div></div>
+</template>

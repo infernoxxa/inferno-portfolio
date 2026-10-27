@@ -1,12 +1,12 @@
-# Inferno Portfolio
+# XXX Inferno 个人博客与简历
 
-XXX Inferno 的个人主页与求职作品集。重点展示 PersonalAI 与 CloudSync；补充文献阅读 Demo 和科研经历。
+面向读者、HR 与技术面试官的个人静态网站，记录技术笔记，展示 PersonalAI / CloudSync 项目实践，并提供公开简历。
 
-采用白色背景、红色主色、浅粉色分区与少量亮粉色点缀。Vue 3 + TypeScript + Vite + Vue Router，系统字体、原生 CSS、内联 SVG，无后端、无跟踪 SDK、无外部字体。构建时预渲染每个公开路由，输出可直接托管的静态 HTML。浏览器加载后由 Vue Router 接管站内导航。
+使用 Vue 3、TypeScript、Vite 和 Vue Router。每个内容路由构建为独立静态 HTML，正文和页面元信息无需等待 JavaScript；站内跳转由 Vue Router 接管。无后端、账号系统、跟踪 SDK 或远程字体依赖。
 
-## 本地开发
+## 本地运行
 
-需要 Node.js 22.12+（建议 Node 22 LTS）和 npm。
+需要 Node.js 22.12+ 和 npm。
 
 ```powershell
 cd D:\VueProject\myProfile
@@ -14,7 +14,7 @@ npm ci
 npm run dev
 ```
 
-访问终端显示的本地地址，默认 `http://127.0.0.1:3000`。
+开发地址默认为 `http://127.0.0.1:3000`。本机 Windows 保留范围包含 Vite 默认的 5173，因此在 `vite.config.ts` 中选择 3000。
 
 ```powershell
 npm run build
@@ -22,92 +22,82 @@ npm run check:routes
 npm run preview
 ```
 
-生产预览默认 `http://127.0.0.1:4173`。使用项目自带的轻量静态预览服务，读取 `dist/`，对目录路由重定向至末尾斜杠路径，应用 `_headers`，未知路径返回真实 HTTP 404。这个 Node 脚本仅用于本地预览，线上仍为纯静态部署。`build` 先检查 TypeScript，再构建客户端和临时 SSR 入口，最后生成各页面 HTML 与 sitemap；临时 SSR 文件自动清理。
+生产预览默认 `http://127.0.0.1:4173`，可追加 `-- --port 4174` 更换端口。预览脚本读取 `dist/`，应用 `_headers`，规范化目录路径，并对未知地址返回真实 HTTP 404。它只是本地工具，线上依然只托管静态文件。
 
-## 路由
+## 页面职责
 
-| 路径 | 用途 | 索引 |
-| --- | --- | --- |
-| `/` | 首页 | 是 |
-| `/projects/personal-ai` | PersonalAI 技术详情 | 是 |
-| `/projects/cloud-sync` | CloudSync 技术详情 | 是 |
-| `/ai/` | PersonalAI 公开演示筹备页 | 否 |
-| `/cloud/` | CloudSync 公开演示筹备页 | 否 |
-| `/resume` | 脱敏的公开简历摘要 | 是 |
-| `/404`、其他未知路径 | 自定义 404 | 否 |
+| 路径 | 内容 |
+| --- | --- |
+| `/` | 个人介绍、技术笔记、项目摘要和简历入口 |
+| `/blog` | 文章列表，可按 Agent / 后端工程分类 |
+| `/blog/agent-file-evidence` | Agent 文件修改与读取证据笔记 |
+| `/blog/upload-retry-and-versions` | 文件上传重试、冲突和版本笔记 |
+| `/projects` | 核心项目集合 |
+| `/projects/personal-ai` | PersonalAI 详情 |
+| `/projects/cloud-sync` | CloudSync 详情 |
+| `/about` | 个人背景和技术能力 |
+| `/resume` | 公开简历和打印入口 |
+| `/ai/`、`/cloud/` | 未开放的演示说明 |
+| `/404` 与未知路径 | 自定义 404 |
 
-每个已知路由都生成 `index.html`，真实未知路径使用顶层 `404.html`。不配置将所有路径重写到首页的 `_redirects`，避免隐藏真实 404。Cloudflare Pages 的尾斜杠规范化以实际部署为准，切域名前验证。Vite 开发服务器仍采用 SPA 回退；生产路由验收使用 `npm run preview`，不以开发服务器行为代替生产验证。
+顶部导航使用独立路径，并标记当前位置；文章、项目、简历里的目录才使用段落锚点。文章分类保存在 `topic` 查询参数里，支持刷新和浏览器返回。旧首页的 `#projects`、`#about`、`#skills`、`#contact` 入口兼容跳转到新的对应页面。
 
-## 内容维护
+演示说明与 404 使用 `noindex` 并排除在 sitemap 之外。未知路径不会重写为首页。Cloudflare Pages 上的目录规范化、响应头与 HTTP 404 仍应在正式发布前验证。
 
-- `src/content/profile.ts`：署名、公开简介、技术分组、联系方式及公开 PDF 路径。
-- `src/content/projects.ts`：两个项目的全部介绍、状态、技术取舍、仓库地址、演示入口。
-- `src/content/pages.ts`：路由的 title、description 和是否索引。
-- `src/styles/main.css`：主题变量、布局、响应式和减少动效设置。
-- `scripts/prerender.mjs`：预渲染与 sitemap；域名迁移时一并修改 canonical、OG URL 和 robots。
+## 更新内容
 
-未知 GitHub / 仓库 / 邮箱 / PDF 地址默认留空，相应链接不渲染。演示入口默认使用站内预告页；公开演示可用后，在项目的 `demoUrl` 填入经验证的完整 HTTPS URL，并更新相关状态。仓库地址填入 `repository` 后显示源码链接。
+- `src/content/profile.ts`：公开署名、简介、技术能力、站点源码和可选公开联系方式。
+- `src/content/projects.ts`：项目介绍、设计取舍、真实状态、仓库和演示地址。
+- `src/content/posts.ts`：文章标题、分类、摘要、关联项目和正文分节。
+- `src/content/pages.ts`：页面 SEO；文章元信息由文章数据派生。
+- `src/router.ts`：路由和旧入口兼容；文章详情路由从文章数据派生。
+- `src/styles/main.css`：主题、字体层级、响应式和打印样式。
+- `DESIGN.md`：本版设计方向、结构与导航约定。
 
-原始简历和头像不进入本仓库、`public/` 或构建产物。公开资料采用 `XXX Inferno` 署名，不发布手机号、原始邮箱和学校。提供正式公开版 PDF 后再配置 `profile.resumePdf`。
+新增文章时，在 `posts.ts` 添加唯一 slug 和内容；详情路由、列表和 SEO 会跟随数据更新。新增公开页面后同步扩展静态与浏览器检查的路径清单。
 
-### 内容真实性
+初始两篇文章根据已提供的项目资料整理为工程笔记，不编造历史发布日期、项目指标或额外功能，正式公开前由作者校对。PersonalAI 保留“已完成 · 本地运行”，公开 Demo 单独标为筹备中；CloudSync 不额外宣称整体完工或生产上线。文献阅读系统保持为独立 Demo。
 
-当前实现描述依据用户提供的简历，尚未读取两个项目的源码做独立验证：
+未知邮箱、个人主页、仓库和 PDF 地址留空，相应链接不渲染。站点源码链接使用用户明确提供的公开仓库地址。原始私人简历、头像和未经授权的个人资料不进入 `public/` 或 Git。
 
-- PersonalAI：简历明确写明“已完成 · 本地运行”，与“公开 Demo 筹备中”分别展示。
-- CloudSync：保留简历已有实现描述，不额外宣称整体完工、生产上线或性能指标。
-- 文献阅读系统是独立 Demo，不将它的 RAG / Rerank 功能归入 PersonalAI。
-- 公开演示的配额与数据隔离是未来规划，不标为已完成能力。
+`/resume` 的“打印简历”仅打印公开页面；正式公开版 PDF 经确认后，可放入静态资源并配置 `profile.resumePdf`。联系方式未配置时明确显示尚未公开，不提供虚假联系按钮。
 
-## 本地 Git 优先
+## 本地 Git 与 GitHub
 
-源码仓库为 [infernoxxa/inferno-portfolio](https://github.com/infernoxxa/inferno-portfolio)。日常先在本地开发、预览和提交，经确认后再推送 GitHub。
+源码仓库：[infernoxxa/inferno-portfolio](https://github.com/infernoxxa/inferno-portfolio)。先本地开发、验收与提交，再按用户指示推送。
 
 ```powershell
 git status --short
 git add .
-git commit -m "feat: build Inferno portfolio"
-git log --oneline -5
+git commit -m "Describe the change"
+git push origin main
 ```
 
-日常改动在本地分支进行，验收后合入 `main`。如需新分支，使用 `codex/` 前缀。
+仓库已有 `origin`，不重复添加远端。GitHub 源码同步与 Cloudflare 发布分别管理。本版设计调整优先在本地审阅。
 
-首次关联远端使用以下命令；已有 origin 时无需重复执行 remote add。后续更新通过 git push 推送。GitHub 源码同步与 Cloudflare 发布分别管理。
+## Cloudflare Pages（后续发布）
 
-```powershell
-git remote add origin https://github.com/infernoxxa/inferno-portfolio.git
-git push -u origin main
-```
-
-## Cloudflare Pages Git 集成（后续发布）
-
-现有 `inferno` 是 Direct Upload 项目。保留旧站，新建 Git 集成 Pages 项目，先验证新项目的 `pages.dev`。
+现有 `inferno` 为 Direct Upload 项目，保留它，另建 Git 集成 Pages 项目。先测试新项目的 `pages.dev`，再迁移 `xxxinferno.me`。
 
 | 配置 | 值 |
 | --- | --- |
 | 生产分支 | `main` |
-| 框架预设 | Vue / Vite |
+| 框架 | Vue / Vite |
 | 根目录 | 仓库根目录 |
 | 构建命令 | `npm run build` |
 | 输出目录 | `dist` |
 | 环境变量 | `NODE_VERSION=22` |
 
-Pages 根据 lockfile 安装依赖。若所选构建环境关闭自动安装，改用 `npm ci && npm run build`。纯静态站没有应用密钥或后端环境变量。
+构建平台根据 lockfile 安装依赖；若关闭自动安装，改用 `npm ci && npm run build`。本项目没有应用密钥或后端环境变量。
 
-发布检查顺序：
+发布前检查所有内容页、深链刷新、随机未知路径 404、缺失静态资源、响应头和手机布局。验证通过后，再从旧项目移除根域名并在新项目绑定，检查 DNS 与 HTTPS；旧项目保留至正式域名验收完成。
 
-1. 绑定 GitHub 仓库，在新 `pages.dev` 检查全部已知路由、刷新、资源和手机布局。
-2. 检查随机不存在路径返回 HTTP 404，同时显示自定义 404 页；检查缺失静态资源不会返回首页 HTML。
-3. 检查响应头与 CSP，不允许因策略造成页面脚本或样式加载失败。
-4. 验证通过后，从旧 Pages 移除根域名，再绑定到新项目，按提示核对 DNS / HTTPS。
-5. 旧项目保留到正式域名验证完成，以便回退。
+`/ai/` 和 `/cloud/` 是站内路径，不会自动启用同名子域名。源码推送不会由本工具修改 DNS 或旧站点。
 
-本仓库不配置 DNS、不修改现有站点、不注册或发布 Sites 项目。`/ai/` 和 `/cloud/` 为站内路径，不会自动启用同名子域名。
+## 验收
 
-## 验收范围
+`npm run check:routes` 检查静态 HTML、元信息、H1、内部链接与锚点、真实状态、隐私边界及 sitemap。
 
-`npm run check:routes` 检查构建输出：独立正文与元信息、单个 H1、所有内部链接和锚点、项目状态、无原始简历身份信息、sitemap 排除 noindex 页面。该检查不替代真实浏览器和部署验收。
+`scripts/browser-check.mjs` 使用已有 Playwright 和本机 Chrome，覆盖 360 / 390 / 768 / 1280 / 1440 / 1920px、文章分类及刷新、目录定位、项目与演示往返、浏览器返回、旧入口、键盘与打印样式。设置 `PLAYWRIGHT_MODULE` 指向既有的 Playwright `index.mjs`，必要时设置 `QA_URL`。
 
-人工与浏览器检查覆盖：360 / 390 / 768 / 1280 / 1440 / 1920px、移动端折叠菜单、首屏机制切换、所有路由与返回导航、键盘焦点、控制台与网络错误。实际检查结果记录在 `VALIDATION.md`。
-
-Open Graph 采用本地 SVG 分享图；部分社交平台不支持 SVG 预览。如需覆盖这些平台，后续导出同尺寸 PNG 并更新 `index.html` 的 `og:image`。
+截图与运行报告位于被 Git 忽略的 `artifacts/browser/`。实际验收记录和限制见 `VALIDATION.md`。本地检查不替代真实 Pages、Lighthouse、跨浏览器和真实设备验收。分享图为 SVG，部分平台可能需要另行导出 PNG。
