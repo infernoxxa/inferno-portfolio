@@ -4,12 +4,16 @@ import { projects } from '../content/projects'
 import { posts } from '../content/posts'
 import ProjectCard from '../components/ProjectCard.vue'
 import PostList from '../components/PostList.vue'
+import SalaryTicker from '../components/SalaryTicker.vue'
 </script>
 <template>
   <div class="container home-page">
     <section class="personal-intro" aria-labelledby="intro-title">
       <div class="intro-copy"><p class="intro-greeting">你好，我是</p><h1 id="intro-title">XXX Inferno</h1><p class="intro-bio">软件工程硕士在读，2027 届。<br />专注 AI Agent、Python 与 Java 后端开发。</p><p class="intro-description">这里记录我做过的项目、开发中的思考，<br class="wide-only" />也放着一份面向工作机会的公开简历。</p><div class="intro-actions"><RouterLink to="/blog" class="button primary">阅读文章</RouterLink><RouterLink to="/resume" class="button secondary">查看简历</RouterLink></div></div>
-      <aside class="intro-note" aria-label="关于这个网站"><span class="note-marker" aria-hidden="true"></span><p class="note-title">从项目里，留下思考。</p><p>最近的实践围绕两个问题展开：</p><ul><li>怎样让 Agent 在权限边界内可靠执行？</li><li>怎样让文件在中断与冲突后仍然可追溯？</li></ul><RouterLink to="/about" class="inline-link">更多关于我</RouterLink></aside>
+      <div class="intro-notes">
+        <aside class="intro-note" aria-label="关于这个网站"><span class="note-marker" aria-hidden="true"></span><p class="note-title">从项目里，留下思考。</p><p>最近的实践围绕两个问题展开：</p><ul><li>怎样让 Agent 在权限边界内可靠执行？</li><li>怎样让文件在中断与冲突后仍然可追溯？</li></ul><RouterLink to="/about" class="inline-link">更多关于我</RouterLink></aside>
+        <aside class="intro-note intro-note-salary" aria-label="薪跳"><span class="note-marker" aria-hidden="true"></span><p class="note-title">薪跳</p><SalaryTicker /></aside>
+      </div>
     </section>
 
     <div class="home-columns">

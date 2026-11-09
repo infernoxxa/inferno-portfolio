@@ -37,6 +37,7 @@ section[id] { scroll-margin-top: 0; }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--brand); outline-offset: 5px; border-radius: 3px; }
 main:focus { outline: none; }
 .container { width: min(1520px, calc(100% - 96px)); margin-inline: auto; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 23px; border: 1px solid transparent; border-radius: 7px; font-size: 16px; font-weight: 500; line-height: 1.5; transition: background .16s, border-color .16s; }
 .button.primary { color: white; background: var(--brand); }
 .button.primary:hover { background: var(--brand-hover); }
@@ -75,13 +76,15 @@ main:focus { outline: none; }
 .footer-meta { width: 100%; margin: 0; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 15px; }
 
 /* Personal introduction, followed by writing and project summaries. */
-.personal-intro { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(55px, 7vw, 135px); align-items: center; padding: 76px 0 74px; }
+.personal-intro { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.72fr); gap: clamp(30px, 3.6vw, 62px); align-items: center; padding: 76px 0 74px; }
 .intro-greeting { color: var(--muted); font-size: 18px; margin-bottom: 8px; }
 .personal-intro h1 { font-size: clamp(47px, 5vw, 78px); font-weight: 650; line-height: 1.2; margin-bottom: 25px; letter-spacing: -.045em; }
 .intro-bio { font-size: 21px; line-height: 1.85; margin-bottom: 14px; }
 .intro-description { font-size: 17px; color: var(--muted); margin-bottom: 27px; }
 .intro-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-.intro-note { max-width: 470px; padding: 32px 33px 33px; background: var(--soft); border-radius: 14px 14px 42px 14px; position: relative; }
+.intro-notes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 20px; align-items: stretch; }
+.intro-note { padding: 32px 30px 33px; background: var(--soft); border-radius: 14px 14px 42px 14px; position: relative; display: flex; flex-direction: column; }
+.intro-note .inline-link { margin-top: auto; }
 .note-marker { display: block; height: 6px; width: 31px; background: var(--pink); border-radius: 3px; margin-bottom: 21px; }
 .intro-note .note-title { font-size: 23px; font-weight: 500; color: var(--text); margin-bottom: 17px; }
 .intro-note > p:not(.note-title), .intro-note ul { font-size: 15px; color: var(--muted); }
@@ -89,6 +92,33 @@ main:focus { outline: none; }
 .intro-note ul { list-style: none; padding-left: 0; margin: 0 0 25px; display: grid; gap: 7px; }
 .intro-note li { padding-left: 14px; position: relative; }
 .intro-note li::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--pink); position: absolute; top: 12px; left: 0; }
+.intro-note-salary { border-radius: 14px 14px 14px 42px; container-type: inline-size; overflow: hidden; }
+.intro-note .salary { flex: 1; display: flex; flex-direction: column; margin-top: 2px; }
+.salary-amount { display: flex; align-items: baseline; gap: 2px; margin: 0 0 auto; font-family: -apple-system, "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-size: clamp(40px, 16.8cqw, 70px); font-weight: 600; line-height: 1.14; letter-spacing: -.045em; color: var(--text); font-variant-numeric: tabular-nums; }
+.salary-currency { flex: none; font-size: .62em; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+.salary-reel { display: flex; align-items: baseline; }
+.salary-slot { position: relative; flex: none; display: flex; justify-content: center; height: 1.14em; line-height: 1.14em; overflow: hidden; }
+.salary-slot.is-digit { width: .58em; }
+.salary-slot-cur { display: block; line-height: 1.14em; will-change: transform; }
+.salary-slot-old { position: absolute; inset: 0; display: block; line-height: 1.14em; will-change: transform; }
+.salary-rail { display: block; margin-top: 18px; }
+.rail-track { position: relative; display: block; height: 4px; border-radius: 4px; background: rgba(217, 39, 76, .13); }
+.rail-fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: linear-gradient(90deg, #f6b3c6, var(--brand)); transition: width .5s linear; }
+.rail-notch { position: absolute; top: -6px; bottom: -6px; width: 4px; margin-left: -2px; border-radius: 2px; background: var(--soft); }
+.rail-cursor { position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--brand); transition: left .5s linear; }
+.rail-cursor.is-live { animation: rail-beat 1.2s ease-out infinite; }
+.rail-labels { position: relative; display: block; height: 15px; margin-top: 10px; font-size: 11px; line-height: 15px; color: var(--muted); letter-spacing: .02em; }
+.rail-labels > span { position: absolute; top: 0; white-space: nowrap; }
+.rail-labels > span:first-child { left: 0; }
+.rail-labels > span:last-child { right: 0; }
+.rail-break { transform: translateX(-50%); }
+.salary-foot { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 14px; margin: 16px 0 0; }
+.salary-status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.salary-status.is-live { color: var(--brand); }
+.salary-dot { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+.salary-dot.is-live { background: var(--brand); }
+.salary-detail { font-size: 12.5px; color: var(--muted); line-height: 1.6; letter-spacing: .01em; }
+@keyframes rail-beat { 0% { box-shadow: 0 0 0 0 rgba(217, 39, 76, .42); } 70%, 100% { box-shadow: 0 0 0 8px rgba(217, 39, 76, 0); } }
 .home-columns { display: grid; grid-template-columns: 1.35fr 1fr; gap: clamp(48px, 6vw, 100px); padding-top: 28px; }
 .home-columns > section { min-width: 0; }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; margin-bottom: 10px; }
@@ -296,11 +326,15 @@ main:focus { outline: none; }
 .not-found h1 { font-family: inherit; font-size: 31px; }
 .not-found > p:not(.error-code) { color: var(--muted); font-size: 17px; }
 
+@media (max-width: 1399px) {
+  .intro-notes { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 1150px) {
   .container { width: calc(100% - 64px); }
-  .personal-intro { gap: 45px; }
+  .personal-intro { gap: 32px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr); }
   .intro-bio { font-size: 19px; }
-  .intro-note { padding: 27px; }
+  .intro-note { padding: 26px 24px; }
+  .intro-notes { gap: 16px; }
   .intro-note .note-title { font-size: 21px; }
   .home-columns { gap: 45px; }
   .home-columns .section-heading { flex-wrap: wrap; gap: 4px 14px; }
@@ -375,7 +409,9 @@ main:focus { outline: none; }
   .intro-bio { font-size: 18px; }
   .intro-description { font-size: 16px; margin-bottom: 24px; }
   .wide-only { display: none; }
+  .intro-notes { grid-template-columns: 1fr; gap: 16px; }
   .intro-note { padding: 25px 24px; border-bottom-right-radius: 30px; }
+  .intro-note-salary { border-radius: 14px 14px 30px 14px; }
   .intro-note .note-title { font-size: 21px; margin-bottom: 13px; }
   .intro-note > p:not(.note-title), .intro-note ul { font-size: 14px; }
   .note-marker { margin-bottom: 18px; }
