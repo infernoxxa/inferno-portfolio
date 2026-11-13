@@ -61,19 +61,26 @@ tags: [Python, 工程实践]
 
 该文档存储面向数据量较小的个人博客，每次读取会读取文章文档，每次更新使用 Azure ETag 条件写入，冲突返回 409，不自动覆盖。文章量或访问量明显增大时再调整索引与缓存。本地存储和正式容器相互独立，本地文章不会自动上传到正式环境。
 
-## Cloudflare Access
+## GitHub 管理员登录
 
-在 Zero Trust 中启用邮件一次性验证码，创建一个 Self-hosted Access 应用。在同一个应用中保护：
+后台使用 GitHub OAuth，不需要开通 Cloudflare Zero Trust 或绑定该服务的支付方式。公开导航不放管理链接；`/manage` 可以展示登录页，但文章列表、草稿、图片与所有写入均由服务端管理 API 验证登录态。
 
-- `xxxinferno.me/manage`
-- `xxxinferno.me/manage/*`
-- `xxxinferno.me/api/admin/*`
+1. GitHub 头像 → Settings → Developer settings → OAuth Apps → New OAuth App，创建在自己的账号下。
+2. Application name 填 `Inferno 博客管理`；Homepage URL 填 `https://xxxinferno.me`。
+3. Authorization callback URL 必须填写 `https://xxxinferno.me/api/auth/github/callback`。
+4. 创建后复制 Client ID，并使用 Generate a new client secret 生成 Client Secret。Secret 只填入 Cloudflare，不提交 Git、不放到前端，也不发送到聊天中。
+5. 管理员固定用户 ID 为 `189717213`（GitHub 账号 `infernoxxa`），填入 `ADMIN_GITHUB_ID`。用户名和邮箱均不作为授权依据。
+6. 在本机运行下面的命令生成 SESSION_SECRET，结果只保存在 Cloudflare Secret 中：
 
-Allow 规则只填写你的完整邮箱，不设置 Everyone 或绕过规则。从应用页面复制 Audience（AUD）和团队域名，例如 `your-team.cloudflareaccess.com`。
+```powershell
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
 
-管理页采用当前域名下的 `/manage`，因此管理页与 API 保持同源。不需要额外设置 `manage` 子域名。地址可以自行收藏，隐藏链接不代替鉴权。
+登录不申请仓库或邮箱权限，只从 GitHub `/user` 获取用户 ID。OAuth 使用随机 state、10 分钟临时凭据及 PKCE；只有匹配管理员 ID 的账号才会获得 8 小时签名会话。Cookie 使用 HttpOnly、Secure、SameSite=Lax 和 __Host 前缀，访问令牌不返回浏览器，也不存入 Azure。退出登录会清除当前浏览器 Cookie；轮换 SESSION_SECRET 会让全部已有会话失效。
 
-页面与管理接口都会验证 Access JWT 的签名、签发者、受众、有效期与管理员邮箱。原始 `pages.dev` 或预览域名没有合法 Access 令牌时，访问管理页和管理接口都会失败；仅知道地址或伪造邮箱请求头无法写入。预览域名如果也需要管理功能，须配置对应 Access 保护和同一组环境变量。
+默认只允许正式源 `https://xxxinferno.me` 登录，会话不能用于 `pages.dev` 或其他域名。独立预览如需验收 OAuth，应创建另一个 GitHub OAuth App，将回调地址指向固定预览域名，并单独设置 `GITHUB_OAUTH_ORIGIN`、Client ID、Client Secret、SESSION_SECRET 和测试 Azure 容器，避免与生产混用。源地址只含协议和域名，不带结尾斜杠或路径。
+
+如先前已经创建 Cloudflare Access 管理路径规则，上线前移除这些旧规则，避免仍被 Zero Trust 登录拦截。
 
 ## Pages 环境变量
 
@@ -84,22 +91,24 @@ Allow 规则只填写你的完整邮箱，不设置 Everyone 或绕过规则。�
 | `AZURE_STORAGE_ACCOUNT` | 存储账户名 |
 | `AZURE_STORAGE_CONTAINER` | 私有容器名 |
 | `AZURE_STORAGE_ACCOUNT_KEY` | 存储账户密钥，保存为 Secret |
-| `ACCESS_TEAM_DOMAIN` | Access 团队域名 |
-| `ACCESS_AUD` | 上述 Access 应用的 Audience |
-| `ADMIN_EMAIL` | 唯一允许管理的完整邮箱 |
+| `GITHUB_CLIENT_ID` | GitHub OAuth App 的 Client ID |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth App 的 Client Secret，保存为 Secret |
+| `ADMIN_GITHUB_ID` | `189717213`，唯一允许管理的固定用户 ID |
+| `SESSION_SECRET` | 上述命令生成的随机签名密钥，保存为 Secret |
+| `GITHUB_OAUTH_ORIGIN` | 可选，默认 `https://xxxinferno.me`；预览测试按上述说明单独配置 |
 
 `.dev.vars.example` 是参数模板，不能在模板里填写真实凭据。`LOCAL_DEV` 在生产入口被忽略，不能通过环境变量打开生产免登录。
 
 现有构建命令继续是 `npm run build`，产物目录继续是 `dist`；仓库根目录的 `functions/` 由 Pages 一起编译，`public/_routes.json` 只让文章、管理和 API 路由进入 Functions。
 
-没有配置 Azure 时，公开页面继续展示现有两篇文章，管理写入会明确报错。没有配置 Access 或管理员邮箱时，正式管理页和写入接口拒绝访问。
+没有配置 Azure 时，公开页面继续展示现有两篇文章，管理写入会明确报错。没有配置 GitHub 登录参数时，管理页会提示尚未配置，管理 API 拒绝访问。此前的 ACCESS_TEAM_DOMAIN、ACCESS_AUD、ADMIN_EMAIL 已不再使用，可以删除。
 
 ## 上线前验收
 
 先部署预览并配置预览环境，再核对：
 
-1. 未登录无法访问管理页、草稿正文、草稿图片或管理 API。
-2. 只有你的邮箱能够完成邮件验证码登录。
+1. 未登录只能看到管理登录页，不能访问草稿正文、草稿图片或管理 API。
+2. 你的 GitHub 账号能进入后台，其他 GitHub 账号即使授权也没有管理权限。
 3. 导入文章和图片，草稿不出现在公开列表。
 4. 发布后列表、独立链接、刷新、目录、图片和 sitemap 正常。
 5. 更新后正文变化；取消发布后公开正文和图片返回 404。
@@ -113,7 +122,8 @@ Allow 规则只填写你的完整邮箱，不设置 Everyone 或绕过规则。�
 npm run build
 npm run check:routes
 npm run check:articles
+npm run check:auth
 npm run check:functions
 ```
 
-需要检查 Workers 运行环境时执行 `npx wrangler pages dev dist --port 4319`。该模式使用正式鉴权规则，未配置身份时拒绝管理操作；不提供本地免登录。Azure 真实读写和邮件登录须在配置后另行验收。
+需要检查 Workers 运行环境时执行 `npx wrangler pages dev dist --port 4319`。该模式使用正式鉴权规则，未配置身份时仅显示登录说明且拒绝管理 API；不提供本地免登录。Azure 真实读写和 GitHub OAuth 授权登录须在配置后另行验收。

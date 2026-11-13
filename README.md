@@ -2,7 +2,7 @@
 
 面向读者、HR 与技术面试官的个人静态网站，记录技术笔记，展示 PersonalAI / CloudSync 项目实践，并提供公开简历。
 
-使用 Vue 3、TypeScript、Vite 和 Vue Router。项目、简历等页面继续生成静态 HTML；文章由 Cloudflare Pages Functions 读取 Azure Blob Storage，返回带正文和元信息的 HTML，站内跳转由 Vue Router 接管。管理员通过 Cloudflare Access 验证身份，无需虚拟机。
+使用 Vue 3、TypeScript、Vite 和 Vue Router。项目、简历等页面继续生成静态 HTML；文章由 Cloudflare Pages Functions 读取 Azure Blob Storage，返回带正文和元信息的 HTML，站内跳转由 Vue Router 接管。管理员通过 GitHub OAuth 登录，服务端只允许指定用户 ID，无需虚拟机。
 
 文章上传、在线编辑、本地存储和上线配置见 [文章管理与部署](docs/BLOG-DEPLOYMENT.md)。管理地址为 `/manage`，不出现在公开导航中。
 
@@ -94,7 +94,7 @@ git push origin main
 | 输出目录 | `dist` |
 | 环境变量 | `NODE_VERSION=22` |
 
-构建平台根据 lockfile 安装依赖；若关闭自动安装，改用 `npm ci && npm run build`。文章服务的 Azure 与 Access 参数见 [部署说明](docs/BLOG-DEPLOYMENT.md)，真实密钥只能保存为服务端 Secret。
+构建平台根据 lockfile 安装依赖；若关闭自动安装，改用 `npm ci && npm run build`。文章服务的 Azure 与 GitHub OAuth 参数见 [部署说明](docs/BLOG-DEPLOYMENT.md)，真实密钥只能保存为服务端 Secret。
 
 发布前检查所有内容页、深链刷新、随机未知路径 404、缺失静态资源、响应头和手机布局。验证通过后，再从旧项目移除根域名并在新项目绑定，检查 DNS 与 HTTPS；旧项目保留至正式域名验收完成。
 

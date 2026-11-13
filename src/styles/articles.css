@@ -31,6 +31,9 @@
 .inline-error { color: #9e233c; background: #fff1f3; border: 1px solid #f1bdca; }
 .manager-notice { color: #285e4d; background: #f1f8f3; border: 1px solid #cbe1d1; }
 .manager-page { padding-top: 42px; }
+.manager-login { border-top: 1px solid var(--line); padding: 50px 0 90px; min-height: 45vh; }
+.manager-login h2 { font-size: 26px; }
+.manager-login p { color: var(--muted); margin-bottom: 24px; }
 .manager-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; padding-bottom: 28px; }
 .manager-heading h1 { font-size: 38px; margin-bottom: 8px; }
 .manager-heading p { color: var(--muted); margin: 0; font-size: 16px; }

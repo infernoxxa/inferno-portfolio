@@ -1,4 +1,4 @@
-import { requireAdmin, type ApiEnv } from './_lib/access'
+import type { ApiEnv } from './_lib/access'
 import { configuredStore } from './_lib/config'
 import { renderPublicPage } from './_lib/site'
 
@@ -12,12 +12,7 @@ async function handlePage(context: Context) {
   const { request, env } = context
   const path = new URL(request.url).pathname.replace(/\/$/, '') || '/'
   if (path === '/manage' || path.startsWith('/manage/')) {
-    if (!await requireAdmin(request, { ...env, LOCAL_DEV: undefined })) {
-      return new Response('需要管理员验证。请通过已配置 Cloudflare Access 的站点地址进入。', {
-        status: 401, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' },
-      })
-    }
-    // 管理页复用空的首页外壳，客户端根据真实 URL 挂载管理界面。
+    // 页面仅提供登录入口和空外壳，文章数据仍由每个管理 API 独立鉴权。
     const shell = await env.ASSETS.fetch(new Request(new URL('/index.html', request.url)))
     let html = await shell.text()
     html = html.replace(/(<main\b[^>]*>)[\s\S]*?(<\/main>)/, '$1$2').replace(/data-page="[^"]*"/, 'data-page=""')

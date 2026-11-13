@@ -22,8 +22,8 @@ web
 
 - 本次新增 Markdown / ZIP 导入、在线编辑、草稿与发布、分类和标签。
 - Azure Blob Storage 保存文章和图片，Pages Functions 处理接口，不运行虚拟机。
-- 管理入口不出现在公开导航；通过 Cloudflare Access 和服务端身份校验限制为作者本人。
-- 管理员邮箱、Azure 存储和 Access 参数由作者在部署时配置。
+- 管理入口不出现在公开导航；通过 GitHub OAuth 与服务端固定用户 ID 校验限制为作者本人。
+- 管理员 GitHub ID、Azure 存储和 GitHub OAuth 参数由作者在部署时配置。
 - 本地使用独立开发存储；本地验证不代表 Azure 或正式鉴权已经验收。
 
 ## Brand Commitments

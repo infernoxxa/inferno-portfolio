@@ -11,6 +11,9 @@ const saved = ref('')
 const persisted = ref(false)
 const busy = ref(false)
 const loading = ref(true)
+const authenticated = ref(false)
+const loginConfigured = ref(false)
+const localSession = ref(false)
 const error = ref('')
 const notice = ref('')
 const query = ref('')
@@ -119,7 +122,25 @@ function beforeUnload(event: BeforeUnloadEvent) { if (dirty.value) event.prevent
 onBeforeRouteLeave(mayLeave)
 onMounted(async () => {
   window.addEventListener('beforeunload', beforeUnload)
-  await run(catalog)
+  await run(async () => {
+    const response = await fetch('/api/auth/session', { credentials: 'same-origin', cache: 'no-store' })
+    if (!response.ok) throw new Error('暂时无法检查登录状态，请刷新重试。')
+    const session = await response.json() as { authenticated: boolean; configured: boolean; local: boolean }
+    authenticated.value = session.authenticated
+    loginConfigured.value = session.configured
+    localSession.value = session.local
+    if (session.authenticated) await catalog()
+    else {
+      const messages: Record<string, string> = {
+        config: 'GitHub 登录尚未配置完成，请检查 Cloudflare 的服务端参数。',
+        state: '登录已过期或校验未通过，请重新登录。', cancelled: '已取消 GitHub 授权，可以重新登录。',
+        denied: '这个 GitHub 账号没有管理权限，请切换到站点所有者的账号。', github: '暂时无法完成 GitHub 登录，请稍后重试。',
+      }
+      error.value = messages[new URLSearchParams(location.search).get('auth_error') || ''] || ''
+      // 回调结果展示后移除查询参数，刷新时不会继续显示旧错误。
+      if (location.search) history.replaceState(null, '', location.pathname)
+    }
+  })
   loading.value = false
 })
 onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
@@ -129,11 +150,23 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
   <div class="container manager-page">
     <header class="manager-heading">
       <div><h1>文章管理</h1><p>把写好的内容，变成可以分享的文章。</p></div>
-      <RouterLink to="/blog" class="quiet-link">查看公开文章</RouterLink>
+      <div class="manager-save-actions">
+        <RouterLink to="/blog" class="quiet-link">查看公开文章</RouterLink>
+        <form v-if="authenticated && !localSession" method="post" action="/api/auth/logout" @submit="!mayLeave() && $event.preventDefault()">
+          <button type="submit" class="text-button">退出登录</button>
+        </form>
+      </div>
     </header>
     <p v-if="error" class="inline-error" role="alert">{{ error }}</p>
     <p v-if="notice" class="manager-notice" role="status">{{ notice }}</p>
-    <div class="manager-layout" :aria-busy="busy">
+    <p v-if="loading" class="small-note" role="status">正在检查登录状态…</p>
+    <section v-else-if="!authenticated" class="manager-login" aria-labelledby="login-heading">
+      <h2 id="login-heading">登录后管理文章</h2>
+      <p>使用站点所有者的 GitHub 账号登录，继续写作和发布。</p>
+      <a v-if="loginConfigured" href="/api/auth/github/login" class="button primary">使用 GitHub 登录</a>
+      <p v-else class="small-note">登录尚未配置完成，请先在 Cloudflare 添加 GitHub 登录参数。</p>
+    </section>
+    <div v-else class="manager-layout" :aria-busy="busy">
       <aside class="manager-library" aria-label="管理文章列表">
         <div class="manager-library-heading"><h2>我的文章</h2><span>{{ articles.length }} 篇</span></div>
         <div class="manager-import-actions">

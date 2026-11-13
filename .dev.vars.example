@@ -3,6 +3,10 @@
 AZURE_STORAGE_ACCOUNT=your-storage-account
 AZURE_STORAGE_CONTAINER=blog
 AZURE_STORAGE_ACCOUNT_KEY=your-secret-account-key
-ACCESS_TEAM_DOMAIN=your-team.cloudflareaccess.com
-ACCESS_AUD=your-access-application-audience
-ADMIN_EMAIL=your-private-admin-email
+GITHUB_CLIENT_ID=your-oauth-client-id
+GITHUB_CLIENT_SECRET=your-oauth-client-secret
+# infernoxxa 的固定 GitHub 用户 ID，不使用可修改的用户名鉴权。
+ADMIN_GITHUB_ID=189717213
+SESSION_SECRET=replace-with-a-random-secret-of-at-least-32-bytes
+# 默认正式域名；只有更换域名或独立预览 OAuth 应用时才需要设置。
+GITHUB_OAUTH_ORIGIN=https://xxxinferno.me

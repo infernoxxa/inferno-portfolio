@@ -2,6 +2,7 @@ import { sortArticlesByPublication, type ArticleRecord, type Catalog } from '../
 import { importArticle } from '../../shared/import'
 import type { ApiEnv } from './access'
 import { requireAdmin } from './access'
+import { handleAuth } from './github-auth'
 import {
   canReadPublicMedia,
   deleteArticle,
@@ -124,6 +125,7 @@ export async function handleApi(request: Request, env: ApiEnv, store: ObjectStor
     const parts = routeParts(request)
     if (parts[0] !== 'api') return error('接口不存在。', 404)
     if (parts[1] === 'health' && request.method === 'GET') return json({ ok: true })
+    if (parts[1] === 'auth') return await handleAuth(request, env)
     if (parts[1] === 'admin') return await handleAdmin(request, env, store, parts)
     if (parts[1] === 'articles' && parts.length === 2 && request.method === 'GET') {
       return json(await publicCatalog(store))

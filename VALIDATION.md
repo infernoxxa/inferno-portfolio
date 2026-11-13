@@ -1,5 +1,15 @@
 # 本地验收记录
 
+## 2026-11-13 GitHub 管理员登录
+
+- 将 Cloudflare Access 改为 GitHub OAuth，使用固定用户 ID `189717213` 授权；加入 PKCE、state、签名 HttpOnly Cookie、8 小时会话及退出入口，部署说明和参数模板同步更新。
+- `npm run build`、`check:routes`、`check:articles`、`check:auth`、`check:functions`、`git diff --check` 均通过。
+- `check:auth` 使用虚构凭据和模拟 GitHub 响应验证完整授权码交换、PKCE、错误账号拒绝、state 缺失/不匹配/过期、会话篡改/过期/错误用途/错误密钥/缺少有效期、域名隔离、退出 Cookie 清除、跨站写入及生产 LOCAL_DEV 隔离；测试存储禁止写入与删除。
+- Chrome 独立测试页：Workers 端口 4322 未配置凭据时，管理页只展示登录说明，管理目录接口返回“需要管理员身份”；模拟回调错误参数的页面提示正常，刷新后清除旧提示。没有执行真实 GitHub 授权。
+- Vite 隔离数据目录 `.local-data/qa-github-local`、端口 4323，浏览器确认本地免登录和工作台目录正常。全程仅查看，不导入、不保存；原有本地文章与 Azure 生产数据未修改。
+- 登录说明截图：`artifacts/article-management/github-login-20261113.png`。两个临时测试服务验收后停止。
+- 真实 GitHub OAuth 登录及 Azure 读写需在用户创建 OAuth App、填写 Pages 参数并部署后验收。本轮代码尚未提交、推送或部署。
+
 ## 2026-11-13 文章管理与 Azure 存储接口
 
 本轮工作目录：`D:\myCode\myProfile\inferno-portfolio`，分支：`feat/article-management`。接续已有未提交改动，没有推送或部署正式站点。

@@ -12,6 +12,7 @@
     "preview": "tsx scripts/preview.mjs",
     "check:routes": "node scripts/check-routes.mjs",
     "check:articles": "tsx scripts/check-articles.ts",
+    "check:auth": "tsx scripts/check-auth.ts",
     "check:functions": "wrangler pages functions build --outdir .local-data/functions-build"
   },
   "dependencies": {
