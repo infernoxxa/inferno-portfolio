@@ -11,3 +11,8 @@ dist/
 .vscode/
 artifacts/
 coverage/
+.local-data/
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example

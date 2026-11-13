@@ -1,5 +1,22 @@
 # 本地验收记录
 
+## 2026-11-13 文章管理与 Azure 存储接口
+
+本轮工作目录：`D:\myCode\myProfile\inferno-portfolio`，分支：`feat/article-management`。接续已有未提交改动，没有推送或部署正式站点。
+
+- `npm run build`：TypeScript、Vite 客户端与静态预渲染通过。
+- `npm run check:routes`：原有 12 页、225 个内部链接和锚点通过。
+- `npm run check:articles`：ZIP / Markdown 导入、中文图片路径、草稿与图片隔离、发布与撤回、删除、版本冲突、动态 HTML、sitemap、Markdown 原始 HTML 禁用和 Azure Shared Key 签名检查通过。存储使用内存实现，签名使用独立 HMAC 计算核对，未连接真实 Azure。
+- `npm run check:functions`：Pages Functions 的 Workers 构建通过。
+- 浏览器使用当前可用的应用内浏览器。通过页面实际操作完成 ZIP 带图导入、在线改标题、保存草稿、发布、独立链接读取、取消发布后刷新显示“没有找到这篇文章”、单文件 Markdown 导入、单独添加图片和保存后预览。
+- 图片预览和已发布文章中的图片均实际加载成功。最终构建预览的文章页未记录到控制台错误或警告。
+- 管理页在 390px 视口验证：页面内容宽 375px，无横向溢出。桌面沿用原站点白色、红粉色、中文字体和 D2 品牌资源。
+- 本地 Vite 测试端口 4318；本地 Workers 端口 4319 验证未登录 `/manage` 与 `/api/admin/catalog` 返回 401，公开文章返回 200。
+- 最终构建预览端口 4320，管理页和示例文章已保留供查看。4318、4319 的临时测试服务已停止。
+- 本地数据仅写入 `.local-data/qa-20261113`。保留一篇已发布示例和一篇草稿用于查看，不会自动迁移到 Azure。测试未配置 Azure 凭据，没有修改正式存储、Cloudflare 配置或线上文章。
+- 截图：`artifacts/article-management/manager-desktop.jpg`、`manager-mobile.jpg`、`article-desktop.jpg`。
+- 正式 Azure 读写、真实 Access 邮件登录、正式域名和预览域名的访问策略尚待用户配置后验收。说明见 `docs/BLOG-DEPLOYMENT.md`。
+
 日期：2026-10-26（Asia/Shanghai）。项目位置：`D:\VueProject\myProfile`。
 
 ## 2026-10-28 使用 D2 站点形象

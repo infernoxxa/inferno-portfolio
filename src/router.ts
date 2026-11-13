@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, createMemoryHistory } from 'vue-router'
-import { posts } from './content/posts'
 
 export function makeRouter(server = false) {
   const router = createRouter({
@@ -7,7 +6,8 @@ export function makeRouter(server = false) {
     routes: [
       { path: '/', component: () => import('./views/HomeView.vue') },
       { path: '/blog', component: () => import('./views/BlogView.vue') },
-      ...posts.map(post => ({ path: '/blog/' + post.slug, component: () => import('./views/ArticleView.vue'), props: { slug: post.slug } })),
+      { path: '/blog/:slug', component: () => import('./views/ArticleView.vue'), props: true },
+      { path: '/manage', component: () => import('./views/ArticleManagerView.vue') },
       { path: '/projects', component: () => import('./views/ProjectsView.vue') },
       { path: '/projects/:id(personal-ai|cloud-sync)', component: () => import('./views/ProjectView.vue'), props: true },
       { path: '/about', component: () => import('./views/AboutView.vue') },

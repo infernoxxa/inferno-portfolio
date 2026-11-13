@@ -16,6 +16,7 @@ export const publicPages = [
 ]
 
 export function pageMeta(path: string) {
+  if (path.replace(/\/$/, '') === '/manage') return { path: '/manage', title: '文章管理 | XXX Inferno', description: '作者专用文章管理页。', index: false, kind: 'website' }
   return publicPages.find(page => page.path === path || (page.path !== '/' && page.path.replace(/\/$/, '') === path.replace(/\/$/, ''))) || publicPages[publicPages.length - 1]!
 }
 export function updateMeta(path: string) {

@@ -196,6 +196,7 @@ main:focus { outline: none; }
 .article-toc h2, .project-toc h2 { font-size: 15px; margin-bottom: 14px; font-weight: 500; }
 .article-toc a, .project-toc a { font-size: 14px; color: var(--muted); padding: 9px 0; line-height: 1.6; }
 .article-toc a:hover, .project-toc a:hover { color: var(--brand); }
+.article-toc a[aria-current="location"] { color: var(--brand); text-decoration: underline; text-decoration-color: #e9adb9; text-decoration-thickness: 1px; text-underline-offset: 5px; }
 .article-source { padding: 23px 25px; background: var(--soft); border-radius: 7px; margin-top: 16px; }
 .article-source > p { color: var(--muted); font-size: 14px; margin-bottom: 13px; }
 .article-end-nav { border-top: 1px solid var(--line); margin-top: 38px; padding-top: 27px; display: flex; flex-direction: column; gap: 29px; }

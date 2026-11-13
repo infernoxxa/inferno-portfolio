@@ -1,0 +1,8 @@
+# 生产参数在 Cloudflare Pages 项目的 Variables and Secrets 中配置。
+# 请勿在此文件填写真实密钥，也不要使用 VITE_ 前缀。
+AZURE_STORAGE_ACCOUNT=your-storage-account
+AZURE_STORAGE_CONTAINER=blog
+AZURE_STORAGE_ACCOUNT_KEY=your-secret-account-key
+ACCESS_TEAM_DOMAIN=your-team.cloudflareaccess.com
+ACCESS_AUD=your-access-application-audience
+ADMIN_EMAIL=your-private-admin-email

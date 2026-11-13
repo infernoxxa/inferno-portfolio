@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { profile } from '../content/profile'
 import { projects } from '../content/projects'
-import { posts } from '../content/posts'
+import { onMounted } from 'vue'
+import { useArticleLibrary } from '../content/library'
 import ProjectCard from '../components/ProjectCard.vue'
 import PostList from '../components/PostList.vue'
 import SalaryTicker from '../components/SalaryTicker.vue'
+const { articles, refreshArticles } = useArticleLibrary()
+onMounted(refreshArticles)
 </script>
 <template>
   <div class="container home-page">
@@ -17,7 +20,7 @@ import SalaryTicker from '../components/SalaryTicker.vue'
     </section>
 
     <div class="home-columns">
-      <section class="home-writing" aria-labelledby="writing-title"><div class="section-heading"><div><h2 id="writing-title">技术笔记</h2><p>从具体问题出发，整理实现思路。</p></div><RouterLink to="/blog" class="quiet-link">全部文章</RouterLink></div><PostList :posts="posts" /></section>
+      <section class="home-writing" aria-labelledby="writing-title"><div class="section-heading"><div><h2 id="writing-title">技术笔记</h2><p>从具体问题出发，整理实现思路。</p></div><RouterLink to="/blog" class="quiet-link">全部文章</RouterLink></div><PostList :posts="articles.slice(0, 2)" /></section>
       <section class="home-projects" aria-labelledby="projects-title"><div class="section-heading"><div><h2 id="projects-title">我的项目</h2><p>主要实践与当前状态。</p></div><RouterLink to="/projects" class="quiet-link">全部项目</RouterLink></div><ProjectCard v-for="project in projects" :key="project.id" :project="project" compact /></section>
     </div>
 

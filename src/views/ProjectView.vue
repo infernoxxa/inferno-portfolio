@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { getProject, projects } from '../content/projects'
-import { posts } from '../content/posts'
+import { useArticleLibrary } from '../content/library'
 import EngineeringDiagram from '../components/EngineeringDiagram.vue'
 const props = defineProps<{ id: string }>()
 const project = computed(() => getProject(props.id)!)
 const next = computed(() => projects.find(item => item.id !== props.id)!)
-const related = computed(() => posts.find(post => post.projectId === props.id))
+const { articles, refreshArticles } = useArticleLibrary()
+const related = computed(() => articles.value.find(post => post.projectId === props.id))
+onMounted(refreshArticles)
 </script>
 <template>
   <article class="container project-page" :class="project.id">

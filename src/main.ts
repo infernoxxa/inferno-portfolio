@@ -2,6 +2,7 @@ import { nextTick } from 'vue'
 import { makeApp } from './app'
 import { updateMeta } from './content/pages'
 import './styles/main.css'
+import './styles/articles.css'
 
 const { app, router } = makeApp()
 router.afterEach(async (to, from, failure) => {

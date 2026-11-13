@@ -2,14 +2,16 @@
 
 面向读者、HR 与技术面试官的个人静态网站，记录技术笔记，展示 PersonalAI / CloudSync 项目实践，并提供公开简历。
 
-使用 Vue 3、TypeScript、Vite 和 Vue Router。每个内容路由构建为独立静态 HTML，正文和页面元信息无需等待 JavaScript；站内跳转由 Vue Router 接管。无后端、账号系统、跟踪 SDK 或远程字体依赖。
+使用 Vue 3、TypeScript、Vite 和 Vue Router。项目、简历等页面继续生成静态 HTML；文章由 Cloudflare Pages Functions 读取 Azure Blob Storage，返回带正文和元信息的 HTML，站内跳转由 Vue Router 接管。管理员通过 Cloudflare Access 验证身份，无需虚拟机。
+
+文章上传、在线编辑、本地存储和上线配置见 [文章管理与部署](docs/BLOG-DEPLOYMENT.md)。管理地址为 `/manage`，不出现在公开导航中。
 
 ## 本地运行
 
 需要 Node.js 22.12+ 和 npm。
 
 ```powershell
-cd D:\VueProject\myProfile
+cd D:\myCode\myProfile\inferno-portfolio
 npm ci
 npm run dev
 ```
@@ -22,7 +24,7 @@ npm run check:routes
 npm run preview
 ```
 
-生产预览默认 `http://127.0.0.1:4173`，可追加 `-- --port 4174` 更换端口。预览脚本读取 `dist/`，应用 `_headers`，规范化目录路径，并对未知地址返回真实 HTTP 404。它只是本地工具，线上依然只托管静态文件。
+生产构建预览默认 `http://127.0.0.1:4173`，可追加 `-- --port 4174` 更换端口。预览脚本读取 `dist/`，应用响应头并运行本地文章接口；文章数据仍写入被 Git 忽略的本地目录。正式部署由 Pages Functions 处理文章接口。
 
 ## 页面职责
 
@@ -54,7 +56,7 @@ npm run preview
 - `src/styles/main.css`：主题、字体层级、响应式和打印样式。
 - `DESIGN.md`：本版设计方向、结构与导航约定。
 
-新增文章时，在 `posts.ts` 添加唯一 slug 和内容；详情路由、列表和 SEO 会跟随数据更新。新增公开页面后同步扩展静态与浏览器检查的路径清单。
+现有 `posts.ts` 保留为首次初始化内容。以后新增或修改文章使用 `/manage` 的 Markdown / ZIP 导入或在线编辑，无需为每篇文章修改代码或重新构建。正式存储中的修改、撤回与删除优先于种子文章。
 
 初始两篇文章根据已提供的项目资料整理为工程笔记，不编造历史发布日期、项目指标或额外功能，正式公开前由作者校对。PersonalAI 保留“已完成 · 本地运行”，公开 Demo 单独标为筹备中；CloudSync 不额外宣称整体完工或生产上线。文献阅读系统保持为独立 Demo。
 
@@ -92,7 +94,7 @@ git push origin main
 | 输出目录 | `dist` |
 | 环境变量 | `NODE_VERSION=22` |
 
-构建平台根据 lockfile 安装依赖；若关闭自动安装，改用 `npm ci && npm run build`。本项目没有应用密钥或后端环境变量。
+构建平台根据 lockfile 安装依赖；若关闭自动安装，改用 `npm ci && npm run build`。文章服务的 Azure 与 Access 参数见 [部署说明](docs/BLOG-DEPLOYMENT.md)，真实密钥只能保存为服务端 Secret。
 
 发布前检查所有内容页、深链刷新、随机未知路径 404、缺失静态资源、响应头和手机布局。验证通过后，再从旧项目移除根域名并在新项目绑定，检查 DNS 与 HTTPS；旧项目保留至正式域名验收完成。
 
