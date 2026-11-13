@@ -11,7 +11,8 @@ function redirect(location: string, cookies: string[] = []): Response {
 }
 
 function failed(code: string): Response {
-  return redirect('/manage?auth_error=' + code, [authCookie(flowCookie, '', 0), authCookie(sessionCookie, '', 0)])
+  // 登录失败只结束临时授权流程，防止伪造回调清除管理员已有的有效会话。
+  return redirect('/manage?auth_error=' + code, [authCookie(flowCookie, '', 0)])
 }
 
 function randomValue(): string {

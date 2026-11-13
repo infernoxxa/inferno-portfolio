@@ -16,6 +16,13 @@ function cookieFrom(response: Response, name: string) {
   return response.headers.getSetCookie().find(value => value.startsWith(name + '='))?.split(';')[0] || ''
 }
 
+async function assertSessionPreserved(response: Response, session: string) {
+  // 拒绝登录流程时只能清除临时凭据，不得改写浏览器已有的管理员会话。
+  assert(!response.headers.getSetCookie().some(value => value.startsWith(sessionCookie + '=')))
+  assert.match(response.headers.getSetCookie().find(value => value.startsWith(flowCookie + '='))!, /Max-Age=0/)
+  assert.equal((await (await call('auth/session', { headers: { cookie: session } })).json()).authenticated, true)
+}
+
 assert(authConfigured(env))
 assert(!authConfigured({ ...env, SESSION_SECRET: 'short' }))
 assert(!authConfigured({ ...env, ADMIN_GITHUB_ID: 'infernoxxa' }))
@@ -86,6 +93,23 @@ try {
   assert.equal((await call('admin/catalog', { headers: { cookie: session } })).status, 200)
   assert.equal((await (await call('auth/session', { headers: { cookie: session } })).json()).authenticated, true)
   assert.equal((await call('auth/github/login', { headers: { cookie: session } })).headers.get('location'), '/manage')
+
+  // 已登录用户遇到缺失、伪造、过期或不匹配的回调时，仍保持原会话且不调用 GitHub。
+  const fetchesBeforeInvalidCallbacks = fetchCount
+  for (const invalidFlow of ['', flowCookie + '=forged', flowCookie + '=' + expiredFlow, flow]) {
+    const rejected = await call('auth/github/callback?code=test-code&state=wrong', {
+      headers: { cookie: [session, invalidFlow].filter(Boolean).join('; ') },
+    })
+    assert.equal(rejected.headers.get('location'), '/manage?auth_error=state')
+    await assertSessionPreserved(rejected, session)
+  }
+  assert.equal(fetchCount, fetchesBeforeInvalidCallbacks)
+  const cancelled = await call('auth/github/callback?error=access_denied&state=' + state, {
+    headers: { cookie: session + '; ' + flow },
+  })
+  assert.equal(cancelled.headers.get('location'), '/manage?auth_error=cancelled')
+  await assertSessionPreserved(cancelled, session)
+  assert.equal(fetchCount, fetchesBeforeInvalidCallbacks)
   assert.equal((await call('admin/articles', { method: 'POST', headers: { cookie: session, origin: 'https://evil.example.test' } })).status, 403)
   assert.equal(await requireAdmin(new Request('https://preview.example.test/api/admin/catalog', { headers: { cookie: session } }), env), false)
 
@@ -104,11 +128,13 @@ try {
     assert.equal((await call('admin/catalog', { headers: { cookie: sessionCookie + '=' + invalidToken } })).status, 401)
   }
   allowedId = 999
-  const denied = await call(callbackPath, { headers: { cookie: flow } })
+  const denied = await call(callbackPath, { headers: { cookie: session + '; ' + flow } })
   assert.equal(denied.headers.get('location'), '/manage?auth_error=denied')
-  assert.match(denied.headers.getSetCookie().find(value => value.startsWith(sessionCookie))!, /Max-Age=0/)
+  await assertSessionPreserved(denied, session)
   providerFailure = true
-  assert.equal((await call(callbackPath, { headers: { cookie: flow } })).headers.get('location'), '/manage?auth_error=github')
+  const githubFailed = await call(callbackPath, { headers: { cookie: session + '; ' + flow } })
+  assert.equal(githubFailed.headers.get('location'), '/manage?auth_error=github')
+  await assertSessionPreserved(githubFailed, session)
   assert.equal((await call('auth/logout', { method: 'POST', headers: { origin: 'https://evil.example.test' } })).status, 403)
   assert.equal((await call('auth/logout')).status, 404)
   const logout = await call('auth/logout', { method: 'POST', headers: { origin, cookie: session } })
@@ -116,4 +142,4 @@ try {
   assert.match(logout.headers.getSetCookie().find(value => value.startsWith(sessionCookie))!, /Max-Age=0/)
 } finally { globalThis.fetch = originalFetch }
 
-console.log('PASS：GitHub OAuth state、PKCE、固定用户 ID、签名与过期校验、站点隔离、退出、跨站写入与生产免登录隔离。使用模拟 GitHub，未执行真实授权。')
+console.log('PASS：GitHub OAuth state、PKCE、固定用户 ID、签名与过期校验、失败回调保留会话、站点隔离、退出、跨站写入与生产免登录隔离。使用模拟 GitHub，未执行真实授权。')
